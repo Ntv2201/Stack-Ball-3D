@@ -7,6 +7,7 @@ public class Ball : MonoBehaviour
 
     private float currentTime;
     private bool smash, invicible;
+    private int currentBrokenStack, totalStacks;
 
     public enum BallState
     {
@@ -19,11 +20,12 @@ public class Ball : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        currentBrokenStack = 0; 
     }
 
     private void Start()
     {
-        
+        totalStacks = FindObjectsByType<StackController>().Length;
     }
 
     private void Update()
@@ -48,6 +50,8 @@ public class Ball : MonoBehaviour
 
     public void IncreaseBrokenStack()
     {
+        currentBrokenStack++;
+
         if (!invicible)
         {
             ScoreManager.instance.AddScore(1);
@@ -90,6 +94,8 @@ public class Ball : MonoBehaviour
                 }
             }
         }
+
+        FindAnyObjectByType<GameUI>().LevelSliderFill(currentBrokenStack / (float)totalStacks);
 
         if(target.gameObject.tag == "Finish" && ballState == BallState.Playing)
         {
