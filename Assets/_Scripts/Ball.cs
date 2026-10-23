@@ -50,14 +50,14 @@ public class Ball : MonoBehaviour
             {
                 if(target.gameObject.tag == "enemy" || target.gameObject.tag == "plane")
                 {
-                    Destroy(target.transform.parent.gameObject);
+                    target.transform.parent.GetComponent<StackController>().ShatterAllPart();
                 }
             }
             else
             {
                 if(target.gameObject.tag == "enemy")
                 {
-                    Destroy(target.transform.parent.gameObject);
+                    target.transform.parent.GetComponent<StackController>().ShatterAllPart();
                 }
                 if(target.gameObject.tag == "plane")
                 {
