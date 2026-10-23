@@ -5,7 +5,8 @@ public class Ball : MonoBehaviour
 {
     private Rigidbody rb;
 
-    private bool smash;
+    private float currentTime;
+    private bool smash, invicible;
 
     private void Awake()
     {
@@ -20,6 +21,7 @@ public class Ball : MonoBehaviour
     private void Update()
     {
         Smashing();
+        OnInvicible();
     }
 
     private void FixedUpdate()
@@ -44,14 +46,23 @@ public class Ball : MonoBehaviour
         }
         else
         {
-            if(target.gameObject.tag == "enemy")
+            if (invicible)
             {
-                Destroy(target.transform.parent.gameObject);
+                if(target.gameObject.tag == "enemy" || target.gameObject.tag == "plane")
+                {
+                    Destroy(target.transform.parent.gameObject);
+                }
             }
-
-            if(target.gameObject.tag == "plane")
+            else
             {
-                Debug.Log("Over");
+                if(target.gameObject.tag == "enemy")
+                {
+                    Destroy(target.transform.parent.gameObject);
+                }
+                if(target.gameObject.tag == "plane")
+                {
+                    print("Over");
+                }
             }
         }
 
@@ -76,5 +87,36 @@ public class Ball : MonoBehaviour
         {
             smash = false;
         }
+    }
+
+    private void OnInvicible()
+    {
+        if (invicible)
+        {
+            currentTime -= Time.deltaTime * .35f;
+        }
+        else
+        {
+            if (smash)
+            {
+                currentTime += Time.deltaTime * .8f;
+            }
+            else
+            {
+                currentTime -= Time.deltaTime * .5f;
+            }
+        }
+
+        if(currentTime >= 1)
+        {
+            currentTime = 1;
+            invicible = true;
+        }
+        else if(currentTime <= 0)
+        {
+            currentTime = 0;
+            invicible = false;
+        }
+        print(invicible);
     }
 }

@@ -20,6 +20,7 @@ public class LevelSpawner : MonoBehaviour
         }
 
         ModelSelection();
+        float random = Random.value;
 
         for(i = 0; i > -level - addOn; i -= 0.5f)
         {
@@ -37,6 +38,21 @@ public class LevelSpawner : MonoBehaviour
 
             temp1.transform.position = new Vector3(0, i - 0.01f, 0);
             temp1.transform.eulerAngles = new Vector3(0, i * 8, 0);
+
+            if(Mathf.Abs(i) >= level * .3f && Mathf.Abs(i) <= level * .6f)
+            {
+                temp1.transform.eulerAngles = new Vector3(0, i * 8, 0);
+                temp1.transform.eulerAngles += Vector3.up * 180;
+            }
+            else if(Mathf.Abs(i) >= level * .8f)
+            {
+                temp1.transform.eulerAngles = new Vector3(0, i * 8, 0);
+
+                if(random > .75f)
+                    temp1.transform.eulerAngles = new Vector3(0, i * 8, 0);
+            }
+
+            temp1.transform.parent = FindAnyObjectByType<Rotator>().transform;
         }
         temp2 = Instantiate(WinPrefab);
         temp2.transform.position = new Vector3(0, i - 0.01f, 0);
