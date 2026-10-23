@@ -12,8 +12,10 @@ public class LevelSpawner : MonoBehaviour
     public int level = 1, addOn = 7;
     float i = 0;
 
-    private void Start()
+    private void Awake()
     {
+        level = PlayerPrefs.GetInt("Level", 1);
+
         if(level > 9)
         {
             addOn = 0;
