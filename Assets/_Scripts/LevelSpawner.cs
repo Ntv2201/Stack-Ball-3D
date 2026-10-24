@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelSpawner : MonoBehaviour
 {
@@ -101,6 +102,12 @@ public class LevelSpawner : MonoBehaviour
         //             modelPrefab[i] = model[i + 16];
         //         break;
         // }   
+    }
+
+    public void NextLevel()
+    {
+        PlayerPrefs.SetInt("Level", PlayerPrefs.GetInt("Level") + 1);
+        SceneManager.LoadScene(0);
     }
     
 }

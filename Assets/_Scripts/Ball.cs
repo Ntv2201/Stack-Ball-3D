@@ -1,5 +1,7 @@
-using Unity.VisualScripting;
+using UnityEngine.UI;
 using UnityEngine;
+using Unity.VisualScripting;
+using System.Runtime.InteropServices;
 
 public class Ball : MonoBehaviour
 {
@@ -9,10 +11,14 @@ public class Ball : MonoBehaviour
     private bool smash, invicible;
     private int currentBrokenStack, totalStacks;
 
+    public GameObject invicibleObj;
+    public GameObject fireEffect;
+    public Image invicibleFill;
     public enum BallState
     {
         Prepare, Playing, Died, Finish
     }
+
     [HideInInspector]
     public BallState ballState = BallState.Prepare;
     public AudioClip boundOffClip, deadClip, winClip, destroyClip, iDestroyClip;
@@ -30,8 +36,29 @@ public class Ball : MonoBehaviour
 
     private void Update()
     {
-        Smashing();
-        OnInvicible();
+
+        if(ballState == BallState.Playing)
+        {
+            Smashing();
+            OnInvicible();
+        }
+
+        if(ballState == BallState.Prepare)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                ballState = BallState.Playing;
+            }
+
+            if(ballState == BallState.Finish)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    FindAnyObjectByType<LevelSpawner>().NextLevel();
+                }
+            }
+        }
+
     }
 
     private void FixedUpdate()
@@ -44,7 +71,7 @@ public class Ball : MonoBehaviour
 
         if(rb.linearVelocity.y > 5)
         {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x ,5, rb.linearVelocity.z);
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x , 5, rb.linearVelocity.z);
         }
     }
 
@@ -60,7 +87,7 @@ public class Ball : MonoBehaviour
         else
         {
             ScoreManager.instance.AddScore(2);
-            SoundManager.instance.PlaySoundFX(destroyClip, 0.5f);
+            SoundManager.instance.PlaySoundFX(iDestroyClip, 0.5f);
         }
     }
 
@@ -100,7 +127,7 @@ public class Ball : MonoBehaviour
         if(target.gameObject.tag == "Finish" && ballState == BallState.Playing)
         {
             ballState = BallState.Finish;
-            SoundManager.instance.PlaySoundFX(winClip, .7f);
+            SoundManager.instance.PlaySoundFX(winClip, .8f);
         }
 
     }
@@ -131,9 +158,21 @@ public class Ball : MonoBehaviour
         if (invicible)
         {
             currentTime -= Time.deltaTime * .35f;
+            
+            // set fire FX
+            if (!fireEffect.activeInHierarchy)
+            {
+                fireEffect.SetActive(true);
+            }
         }
         else
-        {
+        {   
+            // unset fire FX
+            if (fireEffect.activeInHierarchy)
+            {
+                fireEffect.SetActive(false);
+            }
+            
             if (smash)
             {
                 currentTime += Time.deltaTime * .8f;
@@ -144,16 +183,31 @@ public class Ball : MonoBehaviour
             }
         }
 
+        if(currentTime >= .35f || invicibleFill.color == Color.red)
+        {
+            invicibleObj.SetActive(true);
+        }
+        else
+        {
+            invicibleObj.SetActive(false);
+        }
+
         if(currentTime >= 1)
         {
             currentTime = 1;
             invicible = true;
+            invicibleFill.color = Color.red;
         }
         else if(currentTime <= 0)
         {
             currentTime = 0;
             invicible = false;
+            invicibleFill.color = Color.white;
         }
-        print(invicible);
+
+        if (invicibleObj.activeInHierarchy)
+        {
+            invicibleFill.fillAmount = currentTime / 1;
+        }
     }
 }
